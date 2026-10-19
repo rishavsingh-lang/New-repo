@@ -8,12 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      # Unzips your project folder automatically
-      - name: Unzip project files
-        run: unzip *.zip -d .
-        
-      - uses: actions/setup-java@v4
+
+      # Unzips your file and makes sure everything sits in the root folder
+      - name: Unzip project files safely
+        run: |
+          unzip Management-system.zip -d extracted_temp
+          if [ -d "extracted_temp/Management-system" ]; then
+            mv extracted_temp/Management-system/* .
+            mv extracted_temp/Management-system/.* . 2>/dev/null || true
+          else
+            mv extracted_temp/* .
+            mv extracted_temp/.* . 2>/dev/null || true
+          fi
+          rm -rf extracted_temp Management-system.zip
+
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
